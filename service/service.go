@@ -34,7 +34,7 @@ func main() {
 	}
 	config.InitConfig(*configPath, config.Settings)
 
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%v", config.Settings.Server.GrpcPort))
+	lis, err := net.Listen("tcp", fmt.Sprintf("%v:%v", config.Settings.Server.GrpcHost, config.Settings.Server.GrpcPort))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}

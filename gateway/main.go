@@ -79,7 +79,6 @@ func newGateway(ctx context.Context, opts ...runtime.ServeMuxOption) (http.Handl
 	if err != nil {
 		return nil, err
 	}
-
 	return mux, nil
 }
 
