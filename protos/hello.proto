@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package hello;
+
+import "google/api/annotations.proto";
+
+// 请求某某
+message HelloRequest {
+    // 姓名
+    string name = 1;
+    // 年龄
+    int32 age = 2;
+}
+// 返回某某
+message HelloReply {
+    // 返回信息
+    string message = 1;
+}
+// Hello服务
+service HelloService {
+    // 接口SayHello
+    rpc SayHello (HelloRequest) returns (HelloReply){
+        option (google.api.http) = {
+            post:"/v1/examples/sayhello"
+            body:"*"
+        };
+    }
+}
