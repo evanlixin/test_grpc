@@ -2,46 +2,39 @@ package main
 
 import (
 	"context"
-	"flag"
-	"fmt"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 	"log"
 	"net"
-	"os"
-	"test_grpc/gateway/config"
 	"test_grpc/protos"
 	pb "test_grpc/protos"
-)
-
-var (
-	configPath = flag.String("c", "./gateway/config/config.conf", "Application config file")
 )
 
 type HelloService struct {
 }
 
-//	SayHello(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error)
-func (s *HelloService) SayHello(ctx context.Context, in *hello.HelloRequest) (*hello.HelloReply, error) {
+//	SayHello(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReponse, error)
+func (s *HelloService) SayHello(ctx context.Context, in *hello.HelloRequest) (*hello.HelloReponse, error) {
 	log.Printf("Received: %v", in.Name)
-	var messge string = fmt.Sprintf("Hello , %v ; your age is %d", in.Name, in.Age)
-	return &hello.HelloReply{Message: messge}, nil
+	return &hello.HelloReponse{Reply: in.Name}, nil
 }
 func main() {
-
-	flag.Parse()
-	if configPath == nil {
-		os.Exit(1)
+	c, err := credentials.NewServerTLSFromFile("../certs/server/server.pem", "../certs/server/server.key")
+	if err != nil {
+		log.Fatalf("credentials.NewServerTLSFromFile err: %v", err)
 	}
-	config.InitConfig(*configPath, config.Settings)
+	server := grpc.NewServer(grpc.Creds(c))
+	//server := grpc.NewServer()
 
-	lis, err := net.Listen("tcp", fmt.Sprintf("%v:%v", config.Settings.Server.GrpcHost, config.Settings.Server.GrpcPort))
+	pb.RegisterHelloServiceServer(server, &HelloService{})
+
+	lis, err := net.Listen("tcp", ":50123")
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	grpcService := grpc.NewServer()
-	pb.RegisterHelloServiceServer(grpcService, &HelloService{})
-	if err := grpcService.Serve(lis); err != nil {
+	if err := server.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
+
 }
