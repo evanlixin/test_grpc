@@ -19,7 +19,7 @@ func (s *HelloService) SayHello(ctx context.Context, in *hello.HelloRequest) (*h
 	return &hello.HelloReponse{Reply: in.Name}, nil
 }
 func main() {
-	c, err := credentials.NewServerTLSFromFile("../certs/server/server.pem", "../certs/server/server.key")
+	c, err := credentials.NewServerTLSFromFile("./certs/server/server.pem", "./certs/server/server.key")
 	if err != nil {
 		log.Fatalf("credentials.NewServerTLSFromFile err: %v", err)
 	}
